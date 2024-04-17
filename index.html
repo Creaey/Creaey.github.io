@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>五行生克测试</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 添加视口元标签 -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
     body {
         font-family: 'Arial', sans-serif;
@@ -21,8 +21,8 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         border-radius: 8px;
         text-align: center;
-        width: 100%; /* 确保容器宽度自适应 */
-        max-width: 600px; /* 最大宽度限制 */
+        width: 100%;
+        max-width: 600px;
     }
     h1 {
         color: #333;
@@ -36,7 +36,10 @@
         background-color: #fff;
         cursor: pointer;
         font-size: 16px;
-        width: 100%; /* 确保控件宽度自适应 */
+        width: 100%;
+    }
+    button:hover {
+        background-color: #f0f0f0;
     }
     label {
         display: block;
@@ -44,11 +47,11 @@
         color: #555;
         font-size: 18px;
     }
-    #feedback {
+    #feedback, #levelChange {
         color: #d00;
         margin-top: 20px;
     }
-    #score {
+    #score, #level {
         margin-top: 20px;
         font-size: 20px;
         color: #28a745;
@@ -62,14 +65,15 @@ const generating = {
 const overcoming = {
     '木': '土', '火': '金', '土': '水', '金': '木', '水': '火'
 };
-
+const levels = ["麻瓜", "引气", "聚气", "凝气", "化气", "炼气", "聚元", "凝元", "筑基"];
 let currentElement = '';
 let score = 0;
+let levelIndex = 0;
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]]; // 交换元素
+        [array[i], array[j]] = [array[j], array[i]];
     }
 }
 
@@ -78,7 +82,7 @@ function populateSelects() {
     const shuffledElements = [...elements];
     shuffleArray(shuffledElements);
     selects.forEach(select => {
-        select.innerHTML = ''; // 清空现有选项
+        select.innerHTML = '';
         shuffledElements.forEach(element => {
             const option = document.createElement('option');
             option.value = element;
@@ -123,12 +127,28 @@ function checkAnswers() {
     }
 
     document.getElementById("feedback").innerHTML = feedback;
-    if (correct) {
-        score++;
-        document.getElementById("score").textContent = '分数: ' + score;
-        document.getElementById("feedback").textContent = '回答正确！';
-    }
+    updateLevel(correct);
     document.getElementById("nextQuestion").disabled = false;
+}
+
+function updateLevel(correct) {
+    if (correct) {
+        if (score % 9 === 8 && levelIndex < levels.length - 1) {
+            levelIndex++;
+            document.getElementById("levelChange").textContent = "↑";
+            if (levelIndex === levels.length - 1) {
+                alert("恭喜你成功筑基！");
+            }
+        }
+        score++;
+    } else {
+        if (levelIndex > 0) {
+            levelIndex--;
+            document.getElementById("levelChange").textContent = "↓";
+        }
+    }
+    document.getElementById("score").textContent = '分数: ' + score;
+    document.getElementById("level").textContent = '等级: ' + levels[levelIndex];
 }
 
 window.onload = newQuestion;
@@ -143,21 +163,23 @@ window.onload = newQuestion;
         <select id="generatedBy"></select>
     </div>
     <div>
-        <label for="generates">这个五行生的：</label>
+        <label for="generates">这个五行生的：</label
         <select id="generates"></select>
     </div>
     <div>
-        <label for="overcomeBy">克这个五行：</label>
+        <label for="overcomeBy">克这个五行：</label
         <select id="overcomeBy"></select>
     </div>
     <div>
-        <label for="overcomes">这个五行克的：</label>
+        <label for="overcomes">这个五行克的：</label
         <select id="overcomes"></select>
     </div>
     <button onclick="checkAnswers()">提交</button>
     <button id="nextQuestion" onclick="newQuestion()" disabled>下一题</button>
     <div id="feedback"></div>
     <div id="score">分数: 0</div>
+    <div id="level">等级: 麻瓜</div>
+    <div id="levelChange"></div>
 </div>
 </body>
 </html>
