@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>五行生克测试</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 添加视口元标签 -->
 <style>
     body {
         font-family: 'Arial', sans-serif;
@@ -20,6 +21,8 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         border-radius: 8px;
         text-align: center;
+        width: 100%; /* 确保容器宽度自适应 */
+        max-width: 600px; /* 最大宽度限制 */
     }
     h1 {
         color: #333;
@@ -33,9 +36,7 @@
         background-color: #fff;
         cursor: pointer;
         font-size: 16px;
-    }
-    button:hover {
-        background-color: #f0f0f0;
+        width: 100%; /* 确保控件宽度自适应 */
     }
     label {
         display: block;
@@ -146,7 +147,7 @@ window.onload = newQuestion;
         <select id="generates"></select>
     </div>
     <div>
-        <label for="overcomeBy">克这个五行：</label>
+        <label for="overcomeBy">克这个五行：</label
         <select id="overcomeBy"></select>
     </div>
     <div>
