@@ -65,7 +65,8 @@ const generating = {
 const overcoming = {
     '木': '土', '火': '金', '土': '水', '金': '木', '水': '火'
 };
-const levels = ["麻瓜", "引气", "聚气", "凝气", "化气", "炼气", "聚元", "凝元", "筑基"];
+const levels = ["麻瓜", "引气", "聚气", "凝气", "化气", "炼气", "聚元", "凝元", "筑基初期", "筑基"];
+const levelScores = [0, 9, 18, 27, 36, 45, 54, 63, 72, 81]; // 每个等级对应的起始分数
 let currentElement = '';
 let score = 0;
 let levelIndex = 0;
@@ -133,20 +134,27 @@ function checkAnswers() {
 
 function updateLevel(correct) {
     if (correct) {
-        if (score % 9 === 8 && levelIndex < levels.length - 1) {
-            levelIndex++;
-            document.getElementById("levelChange").textContent = "↑";
-            if (levelIndex === levels.length - 1) {
-                alert("恭喜你成功筑基！");
-            }
-        }
         score++;
     } else {
-        if (levelIndex > 0) {
-            levelIndex--;
-            document.getElementById("levelChange").textContent = "↓";
+        score -= 3; // 错一题扣三分
+        score = Math.max(score, 0); // 确保分数不会小于0
+    }
+
+    // 更新等级
+    let newLevelIndex = levelIndex;
+    for (let i = 0; i < levelScores.length; i++) {
+        if (score >= levelScores[i]) {
+            newLevelIndex = i;
+        } else {
+            break;
         }
     }
+
+    if (newLevelIndex !== levelIndex) {
+        levelIndex = newLevelIndex;
+        document.getElementById("levelChange").textContent = correct ? "↑" : "↓";
+    }
+
     document.getElementById("score").textContent = '分数: ' + score;
     document.getElementById("level").textContent = '等级: ' + levels[levelIndex];
 }
@@ -163,11 +171,11 @@ window.onload = newQuestion;
         <select id="generatedBy"></select>
     </div>
     <div>
-        <label for="generates">这个五行生的：</label>
+        <label for="generates">这个五行生的：</label
         <select id="generates"></select>
     </div>
     <div>
-        <label for="overcomeBy">克这个五行：</label>
+        <label for="overcomeBy">克这个五行：</label
         <select id="overcomeBy"></select>
     </div>
     <div>
