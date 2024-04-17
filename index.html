@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Untitled Document</title>
+<style>
+    #myCanvas {
+        border: 1px solid black;
+    }
+</style>
+</head>
+<body>
+
+<canvas id="myCanvas" width="1600" height="1200"></canvas>
+
+<br/>
+
+Width: <input id="widthInput" type="number" value="1600">
+Height: <input id="heightInput" type="number" value="1200">
+<button onclick="resizeCanvas()">Resize Canvas</button>
+
+<script>
+var canvas = document.getElementById('myCanvas');
+var ctx = canvas.getContext('2d');
+var circles = [];
+
+// Draw the initial set of circles
+drawCircles();
+
+function drawCircles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    circles = [];
+
+    for (var i = 0; i < 10; i++) {
+        var circle = generateCircle();
+        // Check to ensure the circle does not overlap with existing circles
+        while (isOverlapping(circle)) {
+            circle = generateCircle();
+        }
+        circles.push(circle);
+        ctx.beginPath();
+        ctx.arc(circle.x, circle.y, circle.r, 0, 2 * Math.PI);
+        ctx.fillStyle = 'red';
+        ctx.fill();
+    }
+}
+
+function generateCircle() {
+    var radius = 5; // for a circle with a diameter of 10
+    var x = Math.random() * (canvas.width - 2 * radius) + radius;
+    var y = Math.random() * (canvas.height - 2 * radius) + radius;
+    return {x: x, y: y, r: radius};
+}
+
+function isOverlapping(newCircle) {
+    for (var i = 0; i < circles.length; i++) {
+        var existingCircle = circles[i];
+        var distance = Math.sqrt(Math.pow(newCircle.x - existingCircle.x, 2) + Math.pow(newCircle.y - existingCircle.y, 2));
+        if (distance < (newCircle.r + existingCircle.r)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function resizeCanvas() {
+    var newWidth = document.getElementById("widthInput").value;
+    var newHeight = document.getElementById("heightInput").value;
+
+    if(newWidth && newHeight){
+        canvas.width = newWidth;
+        canvas.height = newHeight;
+        drawCircles();
+    }
+}
+
+</script>
+
+</body>
+</html>
