@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>简易 Anki</title>
+<title>奇门小测验</title>
 <meta name="viewport" content="width=device-width, initial-scale=1 ,user-scalable=no">
 <style>
   body {
@@ -97,12 +97,12 @@
 </head>
 <body>
 <div class="container">
-  <h1>简易 Anki 学习卡</h1>
+  <h1>奇门小测验</h1>
   <button onclick="toggleOptions()">选择题目类别</button>
   <div class="options" id="options">
     <label><input type="checkbox" value="dizhipailieshu" checked>地支排列数</label>
-    <label><input type="checkbox" value="science" checked> 科学</label>
-    <label><input type="checkbox" value="history" checked> 历史</label>
+    <label><input type="checkbox" value="paipan" checked> 排盘</label>
+    <label><input type="checkbox" value="jiugong" checked> 九宫</label>
   </div>
   <button onclick="resetScoreAndShowCard()">刷新题库</button>
   <div id="card" class="card" style="display:none;"></div>
@@ -143,13 +143,60 @@
       { question: "亥的地支排列数是多少"
       , answer: "12"},
     ],
-    science: [
-      { question: "水的化学式是什么？", answer: "H2O", imageUrl: "https://example.com/water-molecule.jpg" },
-      { question: "地球围绕什么旋转？", answer: "太阳", imageUrl: "https://example.com/sun-earth.jpg" }
+    paipan: [
+      { question: "如何计算局数？", answer: "(年支排列数+农历月份+农历日+时支序列)÷9的余数"},
+      { question: "定阴阳局的口诀", answer: "冬至一阳生，夏至一阴生（需精确到分钟）"},
+      { question: "拍地盘顺序", answer: "戊，己，庚，辛，壬，癸，丁，丙，乙"},
+      { question: "拍神盘顺序", answer: "值符，腾蛇，太阴，六合，白虎，玄武，九地，九天"},
+      { question: "时支申子辰时马星落在哪", answer: "寅位（东北角）"},
+      { question: "时支巳酉丑时马星落在哪", answer: "亥位（西北角）"},
+      { question: "时支寅午戌时马星落在哪", answer: "申位（西南角）"},
+      { question: "时支亥卯未时马星落在哪", answer: "巳位（东南角）"},
+      { question: "空亡的意义", answer: "只显示20%的信息，另外80%需要转宫看（可以不看）"},
+      { question: "入墓的意义", answer: "只剩下20%的能量，另外80%被埋藏起来"},
+      { question: "击刑的意义", answer: "受到伤害，只剩下50%的能量"},
+      { question: "门迫的意义", answer: "受到迫害，只剩下50%的能量"},
+      { question: "面测转宫口诀", answer: "用挖 挖下去，再回来，先挖位置，再找名字"},
+      { question: "远测转宫口诀", answer: "用飘 先找名字，在对应位置"},
     ],
-    history: [
-      { question: "谁是开国皇帝？", answer: "秦始皇", imageUrl: "https://example.com/qinshihuang.jpg" },
-      { question: "《资治通鉴》的作者是谁？", answer: "司马光", imageUrl: "https://example.com/simaguang.jpg" }
+    jiugong: [
+     { question: "画九宫格的口诀", answer: "无极生太极、太极生两仪、两仪生四象、四象生八卦、八卦定乾坤"},
+      { question: "九宫格排序口诀", answer: ":戴九履一、左三右七、二四为肩、六八为足、中间为空"},
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天辅星 杜门", imageUrl: "./image/jiugong/jiugong.001.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天英星 景门", imageUrl: "./image/jiugong/jiugong.002.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天芮星 死门", imageUrl: "./image/jiugong/jiugong.003.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天冲星 伤门", imageUrl: "./image/jiugong/jiugong.004.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天柱星 惊门", imageUrl: "./image/jiugong/jiugong.006.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天任星 生门", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天蓬星 休门", imageUrl: "./image/jiugong/jiugong.008.jpeg" },
+      { question: "此宫在元旦盘中的值符星和指使门是什么？", answer: "天心星 开门", imageUrl: "./image/jiugong/jiugong.009.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "二兑 巽4宫", imageUrl: "./image/jiugong/jiugong.001.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "一乾 离9宫", imageUrl: "./image/jiugong/jiugong.002.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "五巽 坤2宫", imageUrl: "./image/jiugong/jiugong.003.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "三离 震3宫", imageUrl: "./image/jiugong/jiugong.004.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "四坎 兑7宫", imageUrl: "./image/jiugong/jiugong.006.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "六震 艮8宫", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "八坤 坎1宫", imageUrl: "./image/jiugong/jiugong.008.jpeg" },
+      { question: "先后天八卦中此宫叫什么？", answer: "七艮 乾6宫", imageUrl: "./image/jiugong/jiugong.009.jpeg" },
+      
+      { question: "此宫对应的时支？", answer: "辰 巳", imageUrl: "./image/jiugong/jiugong.001.jpeg" },
+      { question: "此宫对应的时支？", answer: "午", imageUrl: "./image/jiugong/jiugong.002.jpeg" },
+      { question: "此宫对应的时支？", answer: "未 申", imageUrl: "./image/jiugong/jiugong.003.jpeg" },
+      { question: "此宫对应的时支？", answer: "酉", imageUrl: "./image/jiugong/jiugong.004.jpeg" },
+      { question: "此宫对应的时支？", answer: "戌 亥", imageUrl: "./image/jiugong/jiugong.006.jpeg" },
+      { question: "此宫对应的时支？", answer: "子", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+      { question: "此宫对应的时支？", answer: "丑 寅", imageUrl: "./image/jiugong/jiugong.008.jpeg" },
+      { question: "此宫对应的时支？", answer: "卯", imageUrl: "./image/jiugong/jiugong.009.jpeg" },
+
+      { question: "此宫对应的时间？", answer: "7-11", imageUrl: "./image/jiugong/jiugong.001.jpeg" },
+      { question: "此宫对应的时间？", answer: "11-13", imageUrl: "./image/jiugong/jiugong.002.jpeg" },
+      { question: "此宫对应的时间？", answer: "13-17", imageUrl: "./image/jiugong/jiugong.003.jpeg" },
+      { question: "此宫对应的时间？", answer: "17-19", imageUrl: "./image/jiugong/jiugong.004.jpeg" },
+      { question: "此宫对应的时间？", answer: "19-23", imageUrl: "./image/jiugong/jiugong.006.jpeg" },
+      { question: "此宫对应的时间？", answer: "23-1", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+      { question: "此宫对应的时间？", answer: "1-5", imageUrl: "./image/jiugong/jiugong.008.jpeg" },
+      { question: "此宫对应的时间？", answer: "5-7", imageUrl: "./image/jiugong/jiugong.009.jpeg" },
+
     ]
   };
 
