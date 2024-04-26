@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>简易 Anki</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1 ,user-scalable=no">
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -23,13 +23,18 @@
     margin-bottom: 20px;
   }
   .options {
-    display: flex;
-    justify-content: center;
     margin-bottom: 20px;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    max-height: 0;
+  }
+  .options.open {
+    max-height: 1000px; /* 通过设置一个足够大的高度来展开 */
+    transition: max-height 0.3s ease-in;
   }
   .options label {
-    margin-right: 10px;
-    font-size: 18px;
+    display: block;
+    margin-bottom: 10px;
   }
   .card {
     border: 1px solid #ccc;
@@ -93,8 +98,9 @@
 <body>
 <div class="container">
   <h1>简易 Anki 学习卡</h1>
-  <div class="options">
-    <label><input type="checkbox" value="math" checked> 数学</label>
+  <button onclick="toggleOptions()">选择题目类别</button>
+  <div class="options" id="options">
+    <label><input type="checkbox" value="dizhipailieshu" checked>地支排列数</label>
     <label><input type="checkbox" value="science" checked> 科学</label>
     <label><input type="checkbox" value="history" checked> 历史</label>
   </div>
@@ -111,9 +117,31 @@
 </div>
 <script>
   const cards = {
-    math: [
-      { question: "2 + 2 等于多少？", answer: "4", imageUrl: "https://example.com/math-image.jpg" },
-      { question: "5 * 3 等于多少？", answer: "15", imageUrl: "https://example.com/multiplication-image.jpg" }
+    dizhipailieshu: [
+      { question: "子的地支排列数是多少"
+      , answer: "1"},
+      { question: "丑的地支排列数是多少"
+      , answer: "2"},
+      { question: "寅的地支排列数是多少"
+      , answer: "3"},
+      { question: "卯的地支排列数是多少"
+      , answer: "4"},
+      { question: "辰的地支排列数是多少"
+      , answer: "5"},
+      { question: "巳的地支排列数是多少"
+      , answer: "6"},
+      { question: "午的地支排列数是多少"
+      , answer: "7"},
+      { question: "未的地支排列数是多少"
+      , answer: "8"},
+      { question: "申的地支排列数是多少"
+      , answer: "9"},
+      { question: "酉的地支排列数是多少"
+      , answer: "10"},
+      { question: "戌的地支排列数是多少"
+      , answer: "11"},
+      { question: "亥的地支排列数是多少"
+      , answer: "12"},
     ],
     science: [
       { question: "水的化学式是什么？", answer: "H2O", imageUrl: "https://example.com/water-molecule.jpg" },
@@ -170,6 +198,7 @@ function showCard() {
 function revealAnswer() {
   // 检查按钮是否已经禁用
   const revealButton = document.getElementById("revealButton");
+  document.querySelector('button:last-of-type').disabled = true;
   if (revealButton.disabled) {
     return; // 如果按钮已经禁用，则不执行任何操作
   }
@@ -209,7 +238,13 @@ function adjustScore(correct) {
 
   // 启用确认答案按钮
   document.getElementById("revealButton").disabled = false;
+  document.querySelector('button:last-of-type').disabled = false;
 }
+
+function toggleOptions() {
+    const options = document.getElementById('options');
+    options.classList.toggle('open');
+  }
 </script>
 </body>
 </html>
