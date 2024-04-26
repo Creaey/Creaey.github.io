@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>简易 Anki</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .options {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  .options label {
+    margin-right: 10px;
+    font-size: 18px;
+  }
+  .card {
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin-top: 20px;
+    text-align: center;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+  }
+  button {
+    padding: 10px 0; /* 调整按钮的上下内边距 */
+    width: 80%; /* 设置按钮宽度为 80% */
+    margin: 20px auto; /* 上下居中 */
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+  }
+  button:hover {
+    background-color: #0056b3;
+  }
+  img {
+    max-width: 100%;
+    height: auto;
+    margin-top: 10px;
+  }
+  input[type="checkbox"] {
+    margin-right: 5px;
+  }
+  #score {
+    font-size: 18px;
+    margin-top: 20px;
+  }
+  .input-container {
+    display: flex;
+    margin-top: 20px;
+  }
+  #userAnswer {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>简易 Anki 学习卡</h1>
+  <div class="options">
+    <label><input type="checkbox" value="math" checked> 数学</label>
+    <label><input type="checkbox" value="science" checked> 科学</label>
+    <label><input type="checkbox" value="history" checked> 历史</label>
+  </div>
+  <button onclick="resetScoreAndShowCard()">刷新题库</button>
+  <div id="card" class="card" style="display:none;"></div>
+  <div id="answerSection" style="display:none;">
+    <div class="input-container">
+      <input type="text" id="userAnswer" placeholder="请输入你的答案">
+    </div>
+    <button id="revealButton" onclick="revealAnswer()">确认答案</button>
+  </div>
+  <div id="score">得分：0</div>
+  <div id="level">等级：麻瓜</div>
+</div>
+<script>
+  const cards = {
+    math: [
+      { question: "2 + 2 等于多少？", answer: "4", imageUrl: "https://example.com/math-image.jpg" },
+      { question: "5 * 3 等于多少？", answer: "15", imageUrl: "https://example.com/multiplication-image.jpg" }
+    ],
+    science: [
+      { question: "水的化学式是什么？", answer: "H2O", imageUrl: "https://example.com/water-molecule.jpg" },
+      { question: "地球围绕什么旋转？", answer: "太阳", imageUrl: "https://example.com/sun-earth.jpg" }
+    ],
+    history: [
+      { question: "谁是开国皇帝？", answer: "秦始皇", imageUrl: "https://example.com/qinshihuang.jpg" },
+      { question: "《资治通鉴》的作者是谁？", answer: "司马光", imageUrl: "https://example.com/simaguang.jpg" }
+    ]
+  };
+
+  let currentAnswer = '';
+  let score = 0;
+  const levels = [
+  { name: '麻瓜', score: 0 },
+  { name: '炼气', score: 10 },
+  { name: '筑基', score: 20 },
+  { name: '结丹', score: 30 },
+  { name: '元婴', score: 40 },
+  { name: '化神', score: 50 },
+  { name: '炼虚', score: 60 },
+  { name: '合体', score: 70 },
+  { name: '大乘', score: 80 },
+  { name: '真仙', score: 90 },
+  { name: '金仙', score: 100 },
+  { name: '太乙', score: 110 },
+  { name: '大罗', score: 120 },
+  { name: '道主', score: 130 }
+];
+let currentLevelIndex = 0; // 初始等级索引为麻瓜
+
+function resetScoreAndShowCard() {
+  score = 0; // 重置分数为零
+  currentLevelIndex = 0; // 重置等级为麻瓜
+  document.getElementById("score").textContent = '得分：' + score; // 更新得分显示
+  document.getElementById("level").textContent = '等级：' + levels[currentLevelIndex].name; // 更新等级显示
+  showCard(); // 显示下一张卡片
+}
+
+function showCard() {
+  const selectedCategories = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(el => el.value);
+  const combinedCards = selectedCategories.flatMap(category => cards[category]);
+  const card = combinedCards[Math.floor(Math.random() * combinedCards.length)];
+  const cardElement = document.getElementById("card");
+  cardElement.innerHTML = `<strong>问题:</strong> ${card.question}`;
+  if (card.imageUrl) {
+    cardElement.innerHTML += `<br> <img src="${card.imageUrl}" alt="Image">`;
+  }
+  cardElement.style.display = 'block';
+  currentAnswer = card.answer;
+  document.getElementById("answerSection").style.display = 'block';
+}
+
+function revealAnswer() {
+  // 检查按钮是否已经禁用
+  const revealButton = document.getElementById("revealButton");
+  if (revealButton.disabled) {
+    return; // 如果按钮已经禁用，则不执行任何操作
+  }
+
+  const userAnswer = document.getElementById("userAnswer").value;
+  const cardElement = document.getElementById("card");
+  cardElement.innerHTML += `<br><br> <strong>你的答案:</strong> ${userAnswer} <br> <strong>正确答案:</strong> ${currentAnswer}<br><br>`;
+  cardElement.innerHTML += `你觉得你的答案正确吗？ <button onclick="adjustScore(true)">正确</button> <button onclick="adjustScore(false)">错误</button>`;
+  document.getElementById("userAnswer").value = ''; // 清空输入框
+
+  // 禁用确认答案按钮
+  revealButton.disabled = true;
+}
+
+
+function adjustScore(correct) {
+  if (correct) {
+    score += 1;
+  } else {
+    score -= 2;
+    if (score < 0) {
+      score = 0; // 如果得分为负数，将其设置为零
+    }
+  }
+
+  // 更新等级
+  while (currentLevelIndex < levels.length - 1 && score >= levels[currentLevelIndex + 1].score) {
+    currentLevelIndex++;
+  }
+  while (currentLevelIndex > 0 && score < levels[currentLevelIndex].score) {
+    currentLevelIndex--;
+  }
+
+  document.getElementById("score").textContent = '得分：' + score;
+  document.getElementById("level").textContent = '等级：' + levels[currentLevelIndex].name;
+  showCard(); // 调用显示下一题的函数
+
+  // 启用确认答案按钮
+  document.getElementById("revealButton").disabled = false;
+}
+</script>
+</body>
+</html>
