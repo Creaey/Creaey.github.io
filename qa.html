@@ -101,8 +101,9 @@
   <button onclick="toggleOptions()">选择题目类别</button>
   <div class="options" id="options">
     <label><input type="checkbox" value="dizhipailieshu" checked>地支排列数</label>
-    <label><input type="checkbox" value="paipan" checked> 排盘</label>
-    <label><input type="checkbox" value="jiugong" checked> 九宫</label>
+    <label><input type="checkbox" value="paipan" checked>排盘</label>
+    <label><input type="checkbox" value="jiugong" checked>九宫</label>
+    <label><input type="checkbox" value=" xiangyi" checked>象意</label>
   </div>
   <button onclick="resetScoreAndShowCard()">刷新题库</button>
   <div id="card" class="card" style="display:none;"></div>
@@ -152,12 +153,17 @@
       { question: "时支巳酉丑时马星落在哪", answer: "亥位（西北角）"},
       { question: "时支寅午戌时马星落在哪", answer: "申位（西南角）"},
       { question: "时支亥卯未时马星落在哪", answer: "巳位（东南角）"},
-      { question: "空亡的意义", answer: "只显示20%的信息，另外80%需要转宫看（可以不看）"},
+      { question: "空亡的意义", answer: "只显示20%的信息，另外80%需要转宫看（可以不看，好事成不了，坏事说不好"},
       { question: "入墓的意义", answer: "只剩下20%的能量，另外80%被埋藏起来"},
       { question: "击刑的意义", answer: "受到伤害，只剩下50%的能量"},
       { question: "门迫的意义", answer: "受到迫害，只剩下50%的能量"},
       { question: "面测转宫口诀", answer: "用挖 挖下去，再回来，先挖位置，再找名字"},
       { question: "远测转宫口诀", answer: "用飘 先找名字，在对应位置"},
+      { question: "甲子戊对应的空亡位置", answer: "戌亥空"},
+      { question: "甲戌己对应的空亡位置", answer: "申酉空"},
+      { question: "甲申庚对应的空亡位置", answer: "午未空"},
+      { question: "甲辰壬对应的空亡位置", answer: "寅卯空"},
+      { question: "甲寅癸对应的空亡位置", answer: "子丑空"},
     ],
     jiugong: [
      { question: "画九宫格的口诀", answer: "无极生太极、太极生两仪、两仪生四象、四象生八卦、八卦定乾坤"},
@@ -197,7 +203,17 @@
       { question: "此宫对应的时间？", answer: "1-5", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
       { question: "此宫对应的时间？", answer: "5-7", imageUrl: "./image/jiugong/jiugong.004.jpeg" },
 
-    ]
+      { question: "此宫入墓符号", answer: "辛/壬", imageUrl: "./image/jiugong/jiugong.001.jpeg" },
+      { question: "此宫入墓符号", answer: "甲/癸", imageUrl: "./image/jiugong/jiugong.003.jpeg" },
+      { question: "此宫入墓符号", answer: "丁/己/庚", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+      { question: "此宫入墓符号", answer: "乙/丙/戊", imageUrl: "./image/jiugong/jiugong.007.jpeg" },
+
+    ],
+
+    xiangyi: [
+      { question: "癸的象意"
+      , answer: "网状，交错，黑色，为爱鼓掌"},
+    ],
   };
 
   let currentAnswer = '';
