@@ -136,7 +136,7 @@ function updateLevel(correct) {
     if (correct) {
         score++;
     } else {
-        score -= 3; // 错一题扣三分
+        score -= 2; // 错一题扣2分
         score = Math.max(score, 0); // 确保分数不会小于0
     }
 
