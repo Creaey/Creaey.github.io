@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Poker Card Flip, Shuffle, and Detailed View</title>
+<style>
+body, html {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.deck {
+  position: relative;
+  width: 300px; /* 根据卡片数量和宽度自行调整 */
+}
+.card {
+  width: 40px;
+  height: 60px;
+  line-height: 60px;
+  margin: 5px;
+  position: absolute;
+  border: 1px solid black;
+  border-radius: 5px;
+  text-align: center;
+  background-color: grey; /* 牌的背面 */
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+.card.front {
+  background-color: white; /* 牌的正面 */
+  color: black;
+}
+.zoomed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 120px; /* 放大后的尺寸 */
+  height: 180px;
+  line-height: 180px;
+  transform: translate(-50%, -50%); /* 确保完全居中 */
+  z-index: 10;
+}
+.detail {
+  position: fixed;
+  top: 80%; /* 根据牌的放大尺寸调整位置 */
+  left: 50%;
+  width: auto;
+  text-align: center;
+  background: white;
+  border: 1px solid black;
+  padding: 10px;
+  border-radius: 5px;
+  display: none;
+  transform: translateX(-50%);
+}
+</style>
+</head>
+<body>
+<div class="deck" id="deck"></div>
+<button onclick="shuffleAndReset()">洗牌</button>
+<div class="detail" id="detail"></div>
+
+<script>
+const deck = document.getElementById('deck');
+const detail = document.getElementById('detail');
+const faces = ['A♠', 'K♠', 'Q♠', 'J♠']; // 扩展以包含更多牌
+const descriptions = {
+  'A♠': 'Ace of Spades, often seen as the highest card.',
+  'K♠': 'King of Spades, the king in the suit of spades.',
+  'Q♠': 'Queen of Spades, the queen in the suit of spades.',
+  'J♠': 'Jack of Spades, the jack in the suit of spades.'
+};
+
+function initCards() {
+  deck.innerHTML = '';
+  faces.forEach((face, index) => {
+    const card = document.createElement('div');
+    card.classList.add('card');
+    card.textContent = 'Card';
+    card.setAttribute('data-face', face);
+    card.style.left = `${index * 50}px`;
+    deck.appendChild(card);
+  });
+  attachCardEvents();
+}
+
+function shuffleAndReset() {
+  let cards = Array.from(deck.getElementsByClassName('card'));
+  cards.forEach(card => {
+    card.style.left = `${Math.random() * 260}px`; // Random position within deck
+  });
+
+  setTimeout(() => {
+    shuffleArray(cards);
+    cards.forEach((card, index) => {
+      card.style.left = `${index * 50}px`;
+    });
+    attachCardEvents();
+  }, 1000);
+}
+
+function attachCardEvents() {
+  let cards = Array.from(deck.getElementsByClassName('card'));
+  cards.forEach(card => {
+    card.onclick = () => {
+      if (!card.classList.contains('front')) {
+        card.classList.add('front');
+        card.textContent = card.getAttribute('data-face');
+        cards.forEach(c => {
+          if (c !== card) c.style.opacity = '0';
+        });
+      } else {
+        card.classList.toggle('zoomed');
+        toggleDetail(card);
+        if (card.classList.contains('zoomed')) {
+          card.style.left = '50%'; // Ensure the card is centered when zoomed
+        } else {
+          card.style.left = `${Array.from(deck.children).indexOf(card) * 50}px`; // Reset to original position
+        }
+      }
+    };
+  });
+}
+
+function toggleDetail(card) {
+  if (card.classList.contains('zoomed')) {
+    detail.textContent = descriptions[card.getAttribute('data-face')];
+    detail.style.display = 'block';
+  } else {
+    detail.style.display = 'none';
+  }
+}
+
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+initCards();
+</script>
+</body>
+</html>
