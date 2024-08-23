@@ -43,20 +43,35 @@
 <body>
     <div class="container">
         <div class="emoji" id="emojiDisplay">🍏</div>
-        <button onclick="drawEmoji()">抽奖</button>
+        <button onclick="startDrawing()">抽奖</button>
     </div>
 
     <script>
         const emojis = ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶️', '🫑', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🥞', '🥓', '🥩', '🍗', '🍖', '🌭', '🍔', '🍟', '🍕', '🥪', '🌮', '🌯', '🥗', '🥘', '🍝', '🍜', '🍲', '🍛', '🍣', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🥜', '🫘', '🍯', '🥛', '🍼', '🫖', '☕️', '🍵', '🧃', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹'];
 
-        function drawEmoji() {
+        let interval;
+        const duration = 3000; // 抽奖过程的持续时间
+
+        function startDrawing() {
+            const emojiDisplay = document.getElementById('emojiDisplay');
+            emojiDisplay.classList.remove('large');
+            
+            interval = setInterval(() => {
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                emojiDisplay.textContent = randomEmoji;
+            }, 100); // 每 100 毫秒切换一次
+
+            setTimeout(() => {
+                clearInterval(interval);
+                drawFinalEmoji();
+            }, duration);
+        }
+
+        function drawFinalEmoji() {
             const emojiDisplay = document.getElementById('emojiDisplay');
             const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
             emojiDisplay.textContent = randomEmoji;
-            emojiDisplay.classList.remove('large');
-            setTimeout(() => {
-                emojiDisplay.classList.add('large');
-            }, 10);
+            emojiDisplay.classList.add('large');
         }
     </script>
 </body>
