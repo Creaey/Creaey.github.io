@@ -1,195 +1,63 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<title>五行生克测试</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<style>
-    body {
-        font-family: 'Arial', sans-serif;
-        background-color: #f4f4f9;
-        margin: 0;
-        padding: 20px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-    .container {
-        background-color: white;
-        padding: 20px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        border-radius: 8px;
-        text-align: center;
-        width: 100%;
-        max-width: 600px;
-    }
-    h1 {
-        color: #333;
-    }
-    select, button {
-        padding: 8px 16px;
-        margin-top: 10px;
-        margin-bottom: 10px;
-        border: 2px solid #ddd;
-        border-radius: 4px;
-        background-color: #fff;
-        cursor: pointer;
-        font-size: 16px;
-        width: 100%;
-    }
-    button:hover {
-        background-color: #f0f0f0;
-    }
-    label {
-        display: block;
-        margin-top: 20px;
-        color: #555;
-        font-size: 18px;
-    }
-    #feedback, #levelChange {
-        color: #d00;
-        margin-top: 20px;
-    }
-    #score, #level {
-        margin-top: 20px;
-        font-size: 20px;
-        color: #28a745;
-    }
-</style>
-<script>
-const elements = ['木', '火', '土', '金', '水'];
-const generating = {
-    '木': '火', '火': '土', '土': '金', '金': '水', '水': '木'
-};
-const overcoming = {
-    '木': '土', '火': '金', '土': '水', '金': '木', '水': '火'
-};
-const levels = ["麻瓜", "引气", "聚气", "凝气", "化气", "炼气", "聚元", "凝元", "筑基初期", "筑基"];
-const levelScores = [0, 9, 18, 27, 36, 45, 54, 63, 72, 81]; // 每个等级对应的起始分数
-let currentElement = '';
-let score = 0;
-let levelIndex = 0;
-
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-}
-
-function populateSelects() {
-    const selects = document.querySelectorAll('select');
-    const shuffledElements = [...elements];
-    shuffleArray(shuffledElements);
-    selects.forEach(select => {
-        select.innerHTML = '';
-        shuffledElements.forEach(element => {
-            const option = document.createElement('option');
-            option.value = element;
-            option.textContent = element;
-            select.appendChild(option);
-        });
-    });
-}
-
-function newQuestion() {
-    currentElement = elements[Math.floor(Math.random() * elements.length)];
-    document.getElementById("currentElement").textContent = currentElement;
-    document.getElementById("feedback").textContent = '';
-    document.getElementById("nextQuestion").disabled = true;
-    populateSelects();
-}
-
-function checkAnswers() {
-    const genBy = document.getElementById("generatedBy").value;
-    const generates = document.getElementById("generates").value;
-    const overBy = document.getElementById("overcomeBy").value;
-    const overcomes = document.getElementById("overcomes").value;
-
-    let feedback = '';
-    let correct = true;
-
-    if (generating[genBy] !== currentElement) {
-        feedback += `${genBy} 生 ${currentElement} 是错误的，正确答案是 ${Object.keys(generating).find(key => generating[key] === currentElement)} 生 ${currentElement}。<br>`;
-        correct = false;
-    }
-    if (generating[currentElement] !== generates) {
-        feedback += `${currentElement} 生 ${generates} 是错误的，正确答案是 ${currentElement} 生 ${generating[currentElement]}。<br>`;
-        correct = false;
-    }
-    if (overcoming[overBy] !== currentElement) {
-        feedback += `${overBy} 克 ${currentElement} 是错误的，正确答案是 ${Object.keys(overcoming).find(key => overcoming[key] === currentElement)} 克 ${currentElement}。<br>`;
-        correct = false;
-    }
-    if (overcoming[currentElement] !== overcomes) {
-        feedback += `${currentElement} 克 ${overcomes} 是错误的，正确答案是 ${currentElement} 克 ${overcoming[currentElement]}。<br>`;
-        correct = false;
-    }
-
-    document.getElementById("feedback").innerHTML = feedback;
-    updateLevel(correct);
-    document.getElementById("nextQuestion").disabled = false;
-}
-
-function updateLevel(correct) {
-    if (correct) {
-        score++;
-    } else {
-        score -= 2; // 错一题扣2分
-        score = Math.max(score, 0); // 确保分数不会小于0
-    }
-
-    // 更新等级
-    let newLevelIndex = levelIndex;
-    for (let i = 0; i < levelScores.length; i++) {
-        if (score >= levelScores[i]) {
-            newLevelIndex = i;
-        } else {
-            break;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>抽奖系统</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+            font-family: Arial, sans-serif;
         }
-    }
-
-    if (newLevelIndex !== levelIndex) {
-        levelIndex = newLevelIndex;
-        document.getElementById("levelChange").textContent = correct ? "↑" : "↓";
-    }
-
-    document.getElementById("score").textContent = '分数: ' + score;
-    document.getElementById("level").textContent = '等级: ' + levels[levelIndex];
-}
-
-window.onload = newQuestion;
-</script>
+        .container {
+            text-align: center;
+        }
+        .emoji {
+            font-size: 5rem;
+            transition: font-size 0.3s ease;
+        }
+        .emoji.large {
+            font-size: 10rem;
+        }
+        button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    <h1>五行生克测试</h1>
-    <div>当前元素: <span id="currentElement"></span></div>
-    <div>
-        <label for="generatedBy">生这个五行：</label>
-        <select id="generatedBy"></select>
+    <div class="container">
+        <div class="emoji" id="emojiDisplay">🍏</div>
+        <button onclick="drawEmoji()">抽奖</button>
     </div>
-    <div>
-        <label for="generates">这个五行生的：</label>
-        <select id="generates"></select>
-    </div>
-    <div>
-        <label for="overcomeBy">克这个五行：</label>
-        <select id="overcomeBy"></select>
-    </div>
-    <div>
-        <label for="overcomes">这个五行克的：</label>
-        <select id="overcomes"></select>
-    </div>
-    <button onclick="checkAnswers()">提交</button>
-    <button id="nextQuestion" onclick="newQuestion()" disabled>下一题</button>
-    <div id="feedback"></div>
-    <div id="score">分数: 0</div>
-    <div id="level">等级: 麻瓜</div>
-    <div id="levelChange"></div>
-</div>
 
-</a>
+    <script>
+        const emojis = ['🍏', '🍎', '🍐', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🫐', '🍈', '🍒', '🍑', '🥭', '🍍', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥬', '🥒', '🌶️', '🫑', '🌽', '🥕', '🧄', '🧅', '🥔', '🍠', '🥐', '🥯', '🍞', '🥖', '🥨', '🧀', '🥚', '🍳', '🥞', '🥓', '🥩', '🍗', '🍖', '🌭', '🍔', '🍟', '🍕', '🥪', '🌮', '🌯', '🥗', '🥘', '🍝', '🍜', '🍲', '🍛', '🍣', '🍤', '🍙', '🍚', '🍘', '🍥', '🥠', '🍡', '🍧', '🍨', '🍦', '🥧', '🧁', '🍰', '🎂', '🍮', '🍭', '🍬', '🍫', '🍿', '🍩', '🍪', '🥜', '🫘', '🍯', '🥛', '🍼', '🫖', '☕️', '🍵', '🧃', '🥤', '🍶', '🍺', '🍻', '🥂', '🍷', '🥃', '🍸', '🍹'];
+
+        function drawEmoji() {
+            const emojiDisplay = document.getElementById('emojiDisplay');
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            emojiDisplay.textContent = randomEmoji;
+            emojiDisplay.classList.remove('large');
+            setTimeout(() => {
+                emojiDisplay.classList.add('large');
+            }, 10);
+        }
+    </script>
 </body>
 </html>
