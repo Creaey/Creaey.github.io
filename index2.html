@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词语排序工具</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sentence-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .word {
+            padding: 10px 20px;
+            background-color: lightblue;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: move;
+            transition: transform 0.2s;
+        }
+
+        .word:hover {
+            transform: scale(1.1);
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: green;
+        }
+
+        .timer {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        #timeList {
+            position: absolute;
+            right: 10px;
+            top: 50px;
+            list-style: none;
+            font-size: 1.2em;
+        }
+
+        @media (max-width: 600px) {
+            .word {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+
+            .timer {
+                font-size: 1.2em;
+            }
+
+            #timeList {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="background-color: #f9f9f9; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; padding: 20px;">
+        <h1 style="text-align: center; margin-bottom: 1.5em;">丑人多做怪</h1>
+        <div style="margin-bottom: 1em;">
+            <label for="sentenceSelect" style="font-weight: bold;">选择从哪句开始:</label>
+            <select id="sentenceSelect" style="padding: 10px; border-radius: 5px; width: 100%; max-width: 300px; margin: 0 auto;">
+                <!-- 句子选择选项 -->
+            </select>
+        </div>
+        <div id="sentenceContainer" class="sentence-container">
+            <!-- 词语列表 -->
+        </div>
+        <button id="checkButton" style="display: block; margin: 0 auto; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">检查排序</button>
+        <p id="result"></p>
+        <div style="text-align: center; margin-top: 2em;">
+            <p>计时: <span id="timer">0:00</span></p>
+        </div>
+        <ul id="timeList" style="list-style: none; padding: 0; margin-top: 20px;">
+            <!-- 完成时间记录 -->
+        </ul>
+    </div>
+
+    <script>
+        // 初始句子列表，词语用 / 分隔
+        const sentences = `
+珍惜/突然/成/了/一件/没有/大不了/的/事
+时光流逝/只怕/满腹情怀/会/太像/个/孩子
+常常/处于/被/告知
+是/为了/大好/前程/而/赏赐
+世道险恶/的/用心之至
+该/怎么/判断/怎么/知
+丑人/多/作怪
+我/只能/一刀/往/心里/窜
+发现/了/你我/都还/迁就于/情感
+而/不敢/去/想/未来
+丑人/多/作怪
+你/最好/全部/从实招来
+发现/了/账/对不起来
+诚实/也没了/依赖
+不/承认/又还想/耍赖
+在/成就/自我/的/途中
+难免会/碰到/令人作呕/的/时候
+例如/说/谁/太/努力/谁/太/着急/谁/太/照/顺序/谁/鼓励/谁/的/问题
+可能/变得/不好/掌握
+或者/其实/是/你/另/有/图谋
+那/就/揭穿/面具/揭穿/道义
+让/你/继续/相信/是/正义/是/无心
+丑人/多/作怪
+我/只能/一刀/往/心里/窜
+发现/了/你/我/都/还/迁就于/情感
+而/不敢/去/想/未来
+丑人/多/作怪
+你/最好/全部/从实招来
+发现/了/账/对不起来
+诚实/也/没/了/依赖
+不承认/又/还/想/耍赖
+丑人/多/作怪
+却/没有/证据/能/说/明白
+你/当/你/盖世奇才
+就/不怕/天塌下来
+我/准备/一枪/往/你/心里/开
+丑人/多/作怪
+你/最好/全部/从实招来
+不管/你/爱/与/不/爱
+成全/了/谁/的/期待
+我/全都/明白
+丑人/多/作怪
+我/只能/一刀/往/心里/窜
+发现/了/你/我/都/还/迁就于/情感
+而/不敢/去想/未来
+丑人/多/作怪
+你/最好/全部/从实招来
+发现/了/账/对不起来
+诚实/也/没了/依赖
+不/承认/又还想/耍赖
+丑人/多/作怪
+却/没有/证据/能/说/明白
+你/当/你/盖世奇才
+就/不怕/天塌下来
+我/准备/一枪/往/你/心里/开
+丑人/多/作怪
+你/最好/全部/从实招来
+不管/你/爱与不爱
+成全了/谁/的/期待
+我/全都/明白
+你/心里/明白
+珍惜/突然/成了/一件/没有/大不了/的/事
+时光流逝/只怕/满腹情怀/会太像/个/孩子
+常常/处于/被/告知
+是/为了/大好/前程/而/赏赐
+世道/险恶/的/用心之至
+该/怎么/判断/怎么/知
+丑人/多/作怪
+
+        `.trim().split('\n');
+
+        let currentSentenceIndex = 0;
+        let correctOrder = [];
+        let startTime, endTime;
+        const sentenceContainer = document.getElementById('sentenceContainer');
+        const resultText = document.getElementById('result');
+        const timeList = document.getElementById('timeList');
+        const sentenceSelect = document.getElementById('sentenceSelect');
+
+        // 初始化句子选择选项
+        function initSentenceSelect() {
+            sentences.forEach((sentence, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = sentence.split('/').slice(0, 5).join(' '); // 显示前5个词语
+                sentenceSelect.appendChild(option);
+            });
+        }
+
+        // 初始化显示第一个句子
+        function loadSentence(index) {
+            if (index === 0) {
+                startTimer();
+            }
+
+            const sentence = sentences[index];
+            const words = sentence.split('/');  // 使用 / 分隔词语
+            correctOrder = [...words];  // 保存正确顺序
+
+            // 随机打乱词语顺序
+            words.sort(() => Math.random() - 0.5);
+
+            // 清空之前的词语
+            sentenceContainer.innerHTML = '';
+
+            // 创建可拖动的词语
+            words.forEach((word, idx) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.classList.add('word');
+                wordDiv.draggable = true;
+                wordDiv.textContent = word;
+
+                // 拖动事件
+                wordDiv.addEventListener('dragstart', handleDragStart);
+                wordDiv.addEventListener('dragover', handleDragOver);
+                wordDiv.addEventListener('drop', handleDrop);
+                wordDiv.addEventListener('dragend', handleDragEnd);
+
+                sentenceContainer.appendChild(wordDiv);
+            });
+        }
+
+        // 拖动事件处理函数
+        let draggedElement = null;
+
+        function handleDragStart(event) {
+            draggedElement = event.target;
+            event.dataTransfer.setData('text/plain', event.target.textContent);
+        }
+
+        function handleDragOver(event) {
+            event.preventDefault();
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            if (event.target.classList.contains('word')) {
+                let tempText = event.target.textContent;
+                event.target.textContent = draggedElement.textContent;
+                draggedElement.textContent = tempText;
+            }
+        }
+
+        function handleDragEnd() {
+            draggedElement = null;
+        }
+
+        // 计时器
+        let timerInterval;
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimeDisplay, 1000);
+        }
+
+        function stopTimer() {
+            endTime = new Date();
+            clearInterval(timerInterval);
+            recordTime();
+        }
+
+        function updateTimeDisplay() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function recordTime() {
+            const elapsed = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const listItem = document.createElement('li');
+            listItem.textContent = `完成时间: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            listItem.style.padding = '10px'; listItem.style.borderBottom = '1px solid #ccc';
+            timeList.appendChild(listItem);
+        }
+
+        // 检查排序
+        document.getElementById('checkButton').addEventListener('click', function() {
+            const currentOrder = Array.from(sentenceContainer.children).map(child => child.textContent);
+            if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+                resultText.textContent = "正确！准备下一句...";
+                setTimeout(() => {
+                    currentSentenceIndex++;
+                    if (currentSentenceIndex < sentences.length) {
+                        loadSentence(currentSentenceIndex);
+                        resultText.textContent = "";
+                    } else {
+                        stopTimer();
+                        resultText.textContent = "所有句子已完成！";
+                    }
+                }, 200);
+            } else {
+                resultText.textContent = "顺序不对，请再试一次。";
+            }
+        });
+
+        // 句子选择事件监听
+        sentenceSelect.addEventListener('change', function() {
+            currentSentenceIndex = parseInt(sentenceSelect.value);
+            loadSentence(currentSentenceIndex);
+            resultText.textContent = "";
+        });
+
+        // 初次加载
+        initSentenceSelect();
+        loadSentence(currentSentenceIndex);
+    </script>
+</body>
+</html>
