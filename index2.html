@@ -30,12 +30,16 @@
             background-color: lightblue;
             border: 1px solid #000;
             border-radius: 5px;
-            cursor: move;
-            transition: transform 0.2s;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
         }
 
         .word:hover {
             transform: scale(1.1);
+        }
+
+        .selected {
+            background-color: yellow;
         }
 
         #result {
@@ -173,6 +177,7 @@
         let currentSentenceIndex = 0;
         let correctOrder = [];
         let startTime, endTime;
+        let selectedWord = null;
         const sentenceContainer = document.getElementById('sentenceContainer');
         const resultText = document.getElementById('result');
         const timeList = document.getElementById('timeList');
@@ -204,46 +209,39 @@
             // 清空之前的词语
             sentenceContainer.innerHTML = '';
 
-            // 创建可拖动的词语
+            // 创建词语元素
             words.forEach((word, idx) => {
                 const wordDiv = document.createElement('div');
                 wordDiv.classList.add('word');
-                wordDiv.draggable = true;
                 wordDiv.textContent = word;
 
-                // 拖动事件
-                wordDiv.addEventListener('dragstart', handleDragStart);
-                wordDiv.addEventListener('dragover', handleDragOver);
-                wordDiv.addEventListener('drop', handleDrop);
-                wordDiv.addEventListener('dragend', handleDragEnd);
+                // 点击事件
+                wordDiv.addEventListener('click', () => handleWordClick(wordDiv));
 
                 sentenceContainer.appendChild(wordDiv);
             });
         }
 
-        // 拖动事件处理函数
-        let draggedElement = null;
+        // 点击事件处理函数
+        function handleWordClick(wordElement) {
+            if (selectedWord === null) {
+                // 如果没有选中任何词语，选中当前词语
+                selectedWord = wordElement;
+                wordElement.classList.add('selected');
+            } else if (selectedWord === wordElement) {
+                // 如果再次点击同一个词语，取消选中
+                wordElement.classList.remove('selected');
+                selectedWord = null;
+            } else {
+                // 如果点击另一个词语，交换内容
+                const tempText = selectedWord.textContent;
+                selectedWord.textContent = wordElement.textContent;
+                wordElement.textContent = tempText;
 
-        function handleDragStart(event) {
-            draggedElement = event.target;
-            event.dataTransfer.setData('text/plain', event.target.textContent);
-        }
-
-        function handleDragOver(event) {
-            event.preventDefault();
-        }
-
-        function handleDrop(event) {
-            event.preventDefault();
-            if (event.target.classList.contains('word')) {
-                let tempText = event.target.textContent;
-                event.target.textContent = draggedElement.textContent;
-                draggedElement.textContent = tempText;
+                // 取消之前选中的词语
+                selectedWord.classList.remove('selected');
+                selectedWord = null;
             }
-        }
-
-        function handleDragEnd() {
-            draggedElement = null;
         }
 
         // 计时器
@@ -310,3 +308,4 @@
     </script>
 </body>
 </html>
+
