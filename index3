@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>翻译排序练习工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin-top: 50px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .sentence-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .word {
+            padding: 10px 20px;
+            background-color: lightblue;
+            border: 1px solid #000;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .word.hidden {
+            color: transparent;
+        }
+
+        .word:hover {
+            transform: scale(1.1);
+        }
+
+        .selected {
+            background-color: yellow;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: green;
+        }
+
+        .timer {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        #timeList {
+            position: absolute;
+            right: 10px;
+            top: 50px;
+            list-style: none;
+            font-size: 1.2em;
+        }
+
+        #modeStatus {
+            text-align: center;
+            font-size: 1.2em;
+            color: blue;
+            margin-top: 10px;
+        }
+
+        #progress {
+            text-align: center;
+            font-size: 1.2em;
+            margin-top: 10px;
+            color: #d9534f;
+        }
+
+        @media (max-width: 600px) {
+            .word {
+                padding: 8px 15px;
+                font-size: 0.9em;
+            }
+
+            .timer {
+                font-size: 1.2em;
+            }
+
+            #timeList {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="background-color: #f9f9f9; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 10px; padding: 20px;">
+        <h1 style="text-align: center; margin-bottom: 1.5em;">心做し</h1>
+        <div style="margin-bottom: 1em;">
+            <label for="sentenceSelect" style="font-weight: bold;">选择句子:</label>
+            <select id="sentenceSelect" style="padding: 10px; border-radius: 5px; width: 100%; max-width: 300px; margin: 0 auto;"></select>
+        </div>
+        <div id="translatedText" style="text-align: center; font-size: 1.5em; margin-bottom: 1em;"></div>
+        <div id="sentenceContainer" class="sentence-container"></div>
+        <button id="checkButton" style="display: block; margin: 0 auto; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">检查排序</button>
+        <button id="showCorrectOrderButton" style="display: block; margin: 20px auto; padding: 10px 20px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">显示正确排序</button>
+        <button id="hideWordsButton" style="display: block; margin: 20px auto; padding: 10px 20px; background-color: #ff5722; color: white; border: none; border-radius: 5px; cursor: pointer;">隐藏3秒模式开关</button>
+        <button id="swapButton" style="display: block; margin: 20px auto; padding: 10px 20px; background-color: #8a2be2; color: white; border: none; border-radius: 5px; cursor: pointer;">原文/译文互换</button>
+        <p id="result"></p>
+        <div id="modeStatus"></div>
+        <div style="text-align: center; margin-top: 2em;">
+            <p>计时: <span id="timer">0:00</span></p>
+        </div>
+        <div id="progress"></div>
+        <ul id="timeList" style="list-style: none; padding: 0; margin-top: 20px;"></ul>
+
+        <div style="text-align: center; margin-top: 2em;">
+            <input type="text" id="inputSentence" placeholder="输入你的排序结果..." style="padding: 10px; width: 80%; max-width: 500px; border-radius: 5px; border: 1px solid #ccc;">
+            <button id="checkInputButton" style="margin-top: 10px; padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">检查输入</button>
+        </div>
+    </div>
+
+    <script>
+        // 初始句子列表，译文在单数行，原文在偶数行，词语用 / 分隔
+        let sentences = `
+呐，若然能将一切舍弃的话
+ねえ/もしも/全て/投げ捨てられたら
+笑着活下去这样的事就会变的轻松吗？
+笑って/生きることが/楽になるの
+胸口又再疼痛起来呢
+また/胸が/痛くなるから
+够了什么都不要说了啊
+もう/何も/言わないでよ
+呐，若然一切都能尽数忘却的话
+ねえ/もしも/全ては/忘れられたなら
+不再哭泣而活下去这事亦会变得轻松吗？
+泣かないで/生きることも/楽になるの
+然而那般的事是不可能的呢
+でも/そんなこと/出来ないから
+够了什麼都不要再给我看啊
+もう/何も/見せないでよ
+就算怎样接近你
+君に/どれだけ/近ずいても
+我的心脏亦是仅此唯一的
+僕の/心臓は/一つだけ
+太残酷了 太残酷了，
+酷いよ/酷いよ
+乾脆将我的身体
+もう/いっそ/僕の/体を
+破坏吧 撒裂吧
+壊して/引き裂いて
+随你喜欢地处置吧
+好き/な/よう/に/してよ
+不论怎样呼叫 怎样挣扎
+叫んで/もがいて
+怎样哭得双眼红肿也好
+瞼を/はらしても
+你还是紧抱着我永不分离
+まだ/君は/僕のことを/抱きしめて/離さない
+已经够了啊
+もう/いいよ
+呐，若然我的愿望能得以实现的话
+ねえ/もしも/僕の/願いが/叶うなら
+我想要得到与你相同的事物呢
+君と/同じものが/欲しんだ
+但因为对我而言那般的东西并不存在
+でも/僕には/存在しないから
+所以啊至少希望你到来这裏啊
+じゃあ/せめて/ここに/来てよ
+就算有多被你所爱
+君に/どれだけ/愛されても
+我的心脏亦是仅此唯一的
+僕の/心臓は/一つだけ
+住手吧 住手吧，不要对我那麼温柔啊
+やめてよ/やめてよ/優しく/しないでよ
+不论怎样我亦无法理解啊
+どうしても/僕には/理解が/出来ないよ
+好痛啊 好痛啊，用言语告诉我吧
+痛いよ/痛いよ/言葉で/教えてよ
+这样的事我不懂啊 不要让我独自一人
+こんなの/知らないよ/一人に/しないで
+太残酷了 太残酷了乾脆将我的身体
+酷いよ/酷いよ/もう/いっそ/僕の/体を
+破坏吧 撒裂吧 随你喜欢地处置吧
+壊して/引き裂いて/好きなようにしてよ
+不论怎样呼叫 怎样挣扎 怎样哭得双眼红肿也好
+叫んで/もがいて/瞼を/はらしても
+你还是紧抱着我永不分离
+まだ/君は/僕のことを/抱きしめて/離さない
+已经够了啊
+もう/いいよ
+呐，若然我拥有心的话
+ねえ/もしも/僕に/心が/あるなら
+那我该怎样去寻找那物才好呢？
+どうやって/それを/見つければ/いいの
+稍作微笑的你言道
+少し/微笑んで/君が/言う
+那个呢，就在这裏啊
+それはね/ここに/あるよ
+`;
+
+        let sentencesArray = sentences.trim().split('\n');
+        let currentSentenceIndex = 0;
+        let correctOrder = [];
+        let startTime, endTime;
+        let selectedWord = null;
+        let hideWordsMode = false;
+        const sentenceContainer = document.getElementById('sentenceContainer');
+        const resultText = document.getElementById('result');
+        const timeList = document.getElementById('timeList');
+        const translatedTextElement = document.getElementById('translatedText');
+        const sentenceSelect = document.getElementById('sentenceSelect');
+        const hideWordsButton = document.getElementById('hideWordsButton');
+        const swapButton = document.getElementById('swapButton');
+        const modeStatus = document.getElementById('modeStatus');
+        const progressElement = document.getElementById('progress');
+
+        // 初始化句子选择选项
+        function initSentenceSelect() {
+            sentenceSelect.innerHTML = '';
+            for (let i = 0; i < sentencesArray.length; i += 2) {
+                const option = document.createElement('option');
+                option.value = i / 2;
+                option.textContent = sentencesArray[i];
+                sentenceSelect.appendChild(option);
+            }
+        }
+
+        // 更新进度百分比
+        function updateProgress() {
+            let progress = ((currentSentenceIndex + 1) / (sentencesArray.length / 2) * 100).toFixed(2);
+            progressElement.textContent = `当前进度: ${progress}%`;
+        }
+
+        // 初始化显示第一个句子
+        function loadSentence(index) {
+            if (index === 0) {
+                startTimer();
+            }
+
+            // 获取译文和原文
+            const translatedText = sentencesArray[index * 2];
+            const originalSentence = sentencesArray[index * 2 + 1];
+            const words = originalSentence.split('/');  // 使用 / 分隔词语
+            correctOrder = [...words];  // 保存正确顺序
+
+            // 显示译文
+            translatedTextElement.textContent = translatedText;
+
+            // 随机打乱词语顺序
+            words.sort(() => Math.random() - 0.5);
+
+            // 清空之前的词语
+            sentenceContainer.innerHTML = '';
+
+            // 创建词语元素
+            words.forEach((word, idx) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.classList.add('word');
+                wordDiv.textContent = word;
+
+                // 点击事件
+                wordDiv.addEventListener('click', () => handleWordClick(wordDiv));
+
+                sentenceContainer.appendChild(wordDiv);
+            });
+
+            // 如果隐藏模式开启，隐藏词语3秒后显示
+            if (hideWordsMode) {
+                hideWordsTemporarily();
+            }
+
+            // 更新进度
+            updateProgress();
+        }
+
+        // 点击事件处理函数
+        function handleWordClick(wordElement) {
+            if (selectedWord === null) {
+                // 如果没有选中任何词语，选中当前词语
+                selectedWord = wordElement;
+                wordElement.classList.add('selected');
+            } else if (selectedWord === wordElement) {
+                // 如果再次点击同一个词语，取消选中
+                wordElement.classList.remove('selected');
+                selectedWord = null;
+            } else {
+                // 如果点击另一个词语，交换内容
+                const tempText = selectedWord.textContent;
+                selectedWord.textContent = wordElement.textContent;
+                wordElement.textContent = tempText;
+
+                // 取消之前选中的词语
+                selectedWord.classList.remove('selected');
+                selectedWord = null;
+            }
+        }
+
+        // 隐藏词语3秒后显示
+        function hideWordsTemporarily() {
+            const wordElements = document.querySelectorAll('.word');
+            wordElements.forEach(wordElement => {
+                wordElement.style.color = 'transparent';
+            });
+            setTimeout(() => {
+                wordElements.forEach(wordElement => {
+                    wordElement.style.color = 'black';
+                });
+            }, 3000);
+        }
+
+        // 隐藏/显示词语模式开关按钮功能
+        hideWordsButton.addEventListener('click', function() {
+            hideWordsMode = !hideWordsMode;
+            if (hideWordsMode) {
+                modeStatus.textContent = "隐藏3秒模式已打开";
+            } else {
+                modeStatus.textContent = "隐藏3秒模式已关闭";
+            }
+        });
+
+        // 原文/译文互换功能
+        swapButton.addEventListener('click', function() {
+            for (let i = 0; i < sentencesArray.length; i += 2) {
+                let temp = sentencesArray[i];
+                sentencesArray[i] = sentencesArray[i + 1];
+                sentencesArray[i + 1] = temp;
+            }
+            initSentenceSelect();
+            loadSentence(currentSentenceIndex);
+        });
+
+        // 计时器
+        let timerInterval;
+        function startTimer() {
+            startTime = new Date();
+            timerInterval = setInterval(updateTimeDisplay, 1000);
+        }
+
+        function stopTimer() {
+            endTime = new Date();
+            clearInterval(timerInterval);
+            recordTime();
+        }
+
+        function updateTimeDisplay() {
+            const now = new Date();
+            const elapsed = Math.floor((now - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function recordTime() {
+            const elapsed = Math.floor((endTime - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const listItem = document.createElement('li');
+            listItem.textContent = `完成时间: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            listItem.style.padding = '10px'; listItem.style.borderBottom = '1px solid #ccc';
+            timeList.appendChild(listItem);
+        }
+
+        // 检查排序
+        document.getElementById('checkButton').addEventListener('click', function() {
+            const currentOrder = Array.from(sentenceContainer.children).map(child => child.textContent);
+            if (JSON.stringify(currentOrder) === JSON.stringify(correctOrder)) {
+                resultText.textContent = "正确！准备下一句...";
+                setTimeout(() => {
+                    currentSentenceIndex++;
+                    if (currentSentenceIndex * 2 < sentencesArray.length) {
+                        loadSentence(currentSentenceIndex);
+                        resultText.textContent = "";
+                    } else {
+                        stopTimer();
+                        resultText.textContent = "所有句子已完成！";
+                    }
+                }, 200);
+            } else {
+                resultText.textContent = "顺序不对，请再试一次。";
+            }
+        });
+
+        // 显示正确排序按钮功能
+        document.getElementById('showCorrectOrderButton').addEventListener('click', function() {
+            resultText.textContent = "正确顺序: " + correctOrder.join(' ');
+        });
+
+        // 句子选择事件监听
+        sentenceSelect.addEventListener('change', function() {
+            currentSentenceIndex = parseInt(sentenceSelect.value);
+            loadSentence(currentSentenceIndex);
+            resultText.textContent = "";
+        });
+
+        // 检查输入框内容
+        document.getElementById('checkInputButton').addEventListener('click', function() {
+    const userInput = document.getElementById('inputSentence').value.trim().replace(/\s+/g, "");
+    const correctString = correctOrder.join('').replace(/\s+/g, "");
+
+    if (userInput === correctString) {
+        resultText.textContent = "输入正确！准备下一句...";
+        setTimeout(() => {
+            currentSentenceIndex++;
+            if (currentSentenceIndex * 2 < sentencesArray.length) {
+                loadSentence(currentSentenceIndex);
+                resultText.textContent = "";
+            } else {
+                stopTimer();
+                resultText.textContent = "所有句子已完成！";
+            }
+        }, 200);
+    } else {
+        resultText.textContent = "输入错误，请再试一次。";
+    }
+
+    // 清空输入框
+    document.getElementById('inputSentence').value = "";
+});
+
+// 添加键盘事件监听器，监听“回车”键
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Enter') {
+        // 模拟点击 "检查输入" 按钮
+        document.getElementById('checkInputButton').click();
+    }
+});
+
+
+        // 初次加载
+        initSentenceSelect();
+        loadSentence(currentSentenceIndex);
+    </script>
+</body>
+</html>
