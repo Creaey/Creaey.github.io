@@ -17,28 +17,41 @@ body {
     justify-content: center;
     align-items: center;
     background: linear-gradient(135deg, #f0f8ff, #b3d9ff);
-    overflow: hidden; /* 禁止滚动条 */
+    overflow-y: auto; /* 允许垂直滚动 */
     min-height: 100%; /* 保持最小高度为视口高度 */
 }
 
+
+
         /* 控制面板样式 */
         .controls {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 600px;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+    position: relative; /* 避免绝对定位使其超出视口 */
+    margin-top: 20px; /* 适当增加顶部间距 */
+    width: 90%;
+    max-width: 600px;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto; /* 允许内部滚动 */
+}
+
         .controls.hidden {
     display: none;
+}
+
+@media (max-width: 768px) {
+    .controls {
+        max-width: 100%; /* 在手机上调整宽度 */
+        padding: 10px;
+    }
+
+    button {
+        font-size: 16px; /* 调整按钮文字大小 */
+    }
 }
 
         textarea, select, input {
