@@ -335,12 +335,15 @@ function retryCurrentLine() {
     attemptCount++;
 
     // 重置状态
-    currentLineIndex = 0; // 重置为第一句
+    currentLineIndex = 0; // 从第一句重新开始
     currentIndex = 0; // 当前点击的字符/单词索引重置为 0
     clickTimes = []; // 清空点击时间记录
     errors = []; // 清空错误记录
+    speedCategories = { perfect: 0, slow: 0, tooSlow: 0 }; // 重置速度分类计数
     results.innerHTML = ''; // 清空结果显示
-    document.querySelectorAll('.word').forEach(word => word.remove()); // 移除所有单词方块
+
+    // 移除所有单词方块
+    document.querySelectorAll('.word').forEach(word => word.remove());
 
     // 更新进度并加载第一句
     updateProgress();
@@ -351,16 +354,22 @@ function retryCurrentLine() {
 
 
 
+
 function returnToControls() {
     controls.classList.remove('hidden');
     progressBar.classList.add('hidden');
     hintContainer.style.display = 'none';
     document.querySelectorAll('.word').forEach(word => word.remove());
-    results.innerHTML = '';
+    results.innerHTML = ''; // 清空结果显示
 
     // 重置尝试次数
     attemptCount = 0;
+
+    // 更新尝试次数显示
+    updateAttemptDisplay();
 }
+
+
 
 
         function loadNextLine() {
@@ -607,16 +616,7 @@ function showClickSpeedFeedback(message, color) {
 }
 
 
-function returnToControls() {
-    controls.classList.remove('hidden');
-    progressBar.classList.add('hidden');
-    hintContainer.style.display = 'none';
-    document.querySelectorAll('.word').forEach(word => word.remove());
-    results.innerHTML = '';
 
-    // 重置速度分类计数器
-    speedCategories = { perfect: 0, slow: 0, tooSlow: 0 };
-}
 
 
 
